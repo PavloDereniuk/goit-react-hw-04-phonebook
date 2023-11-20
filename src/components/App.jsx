@@ -21,53 +21,48 @@ export const App = () => {
     if (savedContacts !== null) {
       setContacts(JSON.parse(savedContacts));
     }
-  }, [contacts]);
+  }, []);
 
   useEffect(() => {
-    setFilter(prevState => {
-      if (prevState !== filter) {
-        window.localStorage.setItem(storageKey, JSON.stringify(contacts));
-      }
-    });
-  }, [filter]);
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
   const updateFilter = newFilter => {
     setFilter(newFilter);
   };
 
   const addContact = newContact => {
-    const item = {
-            ...newContact,
-            id: nanoid(),
-          };
-      
+    const newEntry = {
+      ...newContact,
+      id: nanoid(),
+    };
+
     let contactExists = false;
 
     setContacts(
-      contacts.map(item => {
-        if (contacts.name === item.name) {
+      contacts.map(contact => {
+        if (contact.name === newEntry.name) {
           contactExists = true;
-          window.alert(`${contacts.name} is alredy in contacts.`);
+          window.alert(`${contact.name} is alredy in contacts.`);
         }
-        return contacts.name;
+        return contact;
       })
     );
 
     if (!contactExists) {
-      setContacts(prevItems => [...prevItems.contacts, item]);
+      setContacts(prevItems => [...prevItems, newEntry]);
     }
   };
 
   const deleteContact = contactID => {
-    setContacts(prevState =>
-      prevState.contacts.filter(item => item.id !== contactID)
-    );
+    setContacts(prevState => {
+      return prevState.filter(item => item.id !== contactID);
+    });
   };
 
-  // const filteredData = contacts.filter(item => {
-  //   const filterName = item.name.toLowerCase().includes(filter.toLowerCase());
-  //   return filterName;
-  // });
+  const filteredData = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
   return (
     <Container>
@@ -81,94 +76,3 @@ export const App = () => {
     </Container>
   );
 };
-
-// export class App extends Component {
-//   state = {
-//     contacts: [
-//       { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-//       { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-//       { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-//       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-//     ],
-//     filter: '',
-//   };
-
-//   componentDidMount() {
-//     const savedContacts = window.localStorage.getItem(storageKey);
-//     if (savedContacts !== null) {
-//       this.setState({
-//         contacts: JSON.parse(savedContacts),
-//       });
-//     }
-//   }
-
-//   componentDidUpdate(prevProps, prevState) {
-//     if (prevState.filters !== this.state.contacts) {
-//       window.localStorage.setItem(
-//         storageKey,
-//         JSON.stringify(this.state.contacts)
-//       );
-//     }
-//   }
-
-//   updateFilter = newFilter => {
-//     this.setState({
-//       filter: newFilter,
-//     });
-//   };
-
-//   addContact = newContact => {
-//     const contact = {
-//       ...newContact,
-//       id: nanoid(),
-//     };
-
-//     let contactExists = false;
-
-//     this.state.contacts.map(contacts => {
-//       if (contacts.name === contact.name) {
-//         contactExists = true;
-//         window.alert(`${contacts.name} is alredy in contacts.`);
-//       }
-//       return contacts.name;
-//     });
-
-//     if (!contactExists) {
-//       this.setState(prevState => {
-//         return {
-//           contacts: [...prevState.contacts, contact],
-//         };
-//       });
-//     }
-//   };
-
-//   deleteContact = contactID => {
-//     this.setState(prevState => {
-//       return {
-//         contacts: prevState.contacts.filter(item => item.id !== contactID),
-//       };
-//     });
-//   };
-
-//   render() {
-//     const { contacts, filter } = this.state;
-
-//     const filteredData = contacts.filter(item => {
-//       const filterName = item.name.toLowerCase().includes(filter.toLowerCase());
-
-//       return filterName;
-//     });
-
-//     return (
-//       <Container>
-//         <h1>Phonebook</h1>
-//         <ContactForm onAdd={this.addContact} />
-//         <h2>Contacts</h2>
-//         <Filter filters={filter} onUpdateFilter={this.updateFilter} />
-//         {contacts.length > 0 && (
-//           <ContactList data={filteredData} onDelete={this.deleteContact} />
-//         )}
-//       </Container>
-//     );
-//   }
-// }
